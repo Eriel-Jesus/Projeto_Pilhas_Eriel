@@ -1,0 +1,94 @@
+#include <iostream>
+using namespace std;
+
+// Definido como 30 pois, no pior cenário, todos os 30 números podem ser de um único tipo (par ou ímpar)
+#define MAX 30
+
+struct Pilha {
+    int qtde;
+    int elementos[MAX];
+};
+
+Pilha* init() {
+    Pilha *p = new Pilha();
+    p->qtde = 0;
+    return p;
+}
+
+int isEmpty(Pilha *p) {
+    return (p->qtde == 0);
+}
+
+int push(Pilha *p, int v) {
+    int podeEmpilhar = (p->qtde < MAX);
+    if (podeEmpilhar) {
+        p->elementos[p->qtde++] = v;
+    }
+    return podeEmpilhar;
+}
+
+int pop(Pilha *p) {
+    int podeDesempilhar = (p->qtde > 0);
+    int v = -1; // Valor se vazia
+    if (podeDesempilhar) {
+        v = p->elementos[p->qtde - 1];
+        p->qtde--;
+    }
+    return v;
+}
+
+void freePilha(Pilha *p) {
+    delete p;
+}
+
+int main() {
+    Pilha *pilhaPar = init();
+    Pilha *pilhaImpar = init();
+    
+    int numeroDigitado;
+    int ultimoDigitado;
+    const int TOTAL_NUMEROS = 30;
+
+    cout << "Digite " << TOTAL_NUMEROS << " numeros inteiros em ordem CRESCENTE:\n";
+
+    for (int i = 0; i < TOTAL_NUMEROS; i++) {
+        do {
+            cout << "Numero " << i + 1 << ": ";
+            cin >> numeroDigitado;
+
+            if (i == 0) {
+                ultimoDigitado = numeroDigitado;
+                break; 
+            } else if (numeroDigitado > ultimoDigitado) {
+                ultimoDigitado = numeroDigitado;
+                break;
+            } else {
+                cout << "[Erro] O numero deve ser MAIOR que o anterior (" << ultimoDigitado << "). Tente novamente.\n";
+            }
+        } while (true);
+
+        // Separação em par ou ímpar e empilhamento
+        if (numeroDigitado % 2 == 0) {
+            push(pilhaPar, numeroDigitado);
+        } else {
+            push(pilhaImpar, numeroDigitado);
+        }
+    }
+
+    // Exibição dos resultados em Ordem Decrescente
+    cout << "\n----------------------------------------\n";
+    cout << "Desempilhando os valores PARES (Decrescente):\n";
+    while (!isEmpty(pilhaPar)) {
+        cout << pop(pilhaPar) << " ";
+    }
+    
+    cout << "\n\nDesempilhando os valores IMPARES (Decrescente):\n";
+    while (!isEmpty(pilhaImpar)) {
+        cout << pop(pilhaImpar) << " ";
+    }
+    cout << "\n----------------------------------------\n";
+    freePilha(pilhaPar);
+    freePilha(pilhaImpar);
+
+    return 0;
+}
