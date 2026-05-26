@@ -1,0 +1,100 @@
+#include <iostream>
+using namespace std;
+
+struct No {
+    int dado;
+    struct No *ant;
+};
+
+struct Pilha {
+    No *topo;
+};
+
+Pilha* init() {
+    Pilha *p = new Pilha;
+    p->topo = NULL;
+    return p;
+}
+
+int isEmpty(Pilha *p) {
+    return (p->topo == NULL);
+}
+
+void push(Pilha *p, int v) {
+    No *no = new No;
+    no->dado = v;
+    no->ant = p->topo;
+    p->topo = no;    
+}
+
+int pop(Pilha *p) {
+    int v = -1;
+    if (!isEmpty(p)) {
+        No *no = p->topo;
+        v = no->dado;
+        p->topo = no->ant;
+        delete no;
+    }
+    return v;
+}
+
+void freePilha(Pilha *p) {
+    No *no = p->topo;
+    while (no != NULL) {
+        No *temp = no->ant;
+        delete no; 
+        no = temp;
+    }    
+    delete p;
+}
+
+int main() {
+    Pilha *pilhaPar = init();
+    Pilha *pilhaImpar = init();
+    
+    int numeroDigitado;
+    int ultimoDigitado;
+    const int TOTAL_NUMEROS = 30;
+
+    cout << "Digite " << TOTAL_NUMEROS << " numeros inteiros em ordem CRESCENTE:\n";
+
+    for (int i = 0; i < TOTAL_NUMEROS; i++) {
+        do {
+            cout << "Numero " << i + 1 << ": ";
+            cin >> numeroDigitado;
+
+            if (i == 0) {
+                ultimoDigitado = numeroDigitado;
+                break;
+            } else if (numeroDigitado > ultimoDigitado) {
+                ultimoDigitado = numeroDigitado;
+                break;
+            } else {
+                cout << "[Erro] O numero deve ser MAIOR que o anterior (" << ultimoDigitado << "). Tente novamente.\n";
+            }
+        } while (true);
+
+        if (numeroDigitado % 2 == 0) {
+            push(pilhaPar, numeroDigitado);
+        } else {
+            push(pilhaImpar, numeroDigitado);
+        }
+    }
+
+    cout << "\n----------------------------------------\n";
+    cout << "Desempilhando PARES:\n";
+    while (!isEmpty(pilhaPar)) {
+        cout << pop(pilhaPar) << " ";
+    }
+    
+    cout << "\n\nDesempilhando IMPARES:\n";
+    while (!isEmpty(pilhaImpar)) {
+        cout << pop(pilhaImpar) << " ";
+    }
+    cout << "\n----------------------------------------\n";
+
+    freePilha(pilhaPar);
+    freePilha(pilhaImpar);
+
+    return 0;
+}
